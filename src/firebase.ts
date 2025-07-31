@@ -1,12 +1,9 @@
-// @ts-nocheck
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import { getAuth } from "firebase/auth";
-import { getDatabase } from "firebase/database";
-import { getStorage } from "firebase/storage";
+import { initializeApp, FirebaseApp } from "firebase/app";
+import { getAnalytics, Analytics } from "firebase/analytics";
+import { getAuth, Auth } from "firebase/auth";
+import { getDatabase, Database } from "firebase/database";
+import { getStorage, FirebaseStorage } from "firebase/storage";
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyD3KRJ053jWVM2prcutrppna906RLxq4hY",
   authDomain: "chatsystem-42560.firebaseapp.com",
@@ -18,22 +15,15 @@ const firebaseConfig = {
   databaseURL: "https://chatsystem-42560-default-rtdb.firebaseio.com"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+const app: FirebaseApp = initializeApp(firebaseConfig);
+let analytics: Analytics | null = null;
 
-// Initialize analytics only in browser environment
-let analytics;
 if (typeof window !== 'undefined') {
   analytics = getAnalytics(app);
 }
 
-const auth = getAuth(app);
-const db = getDatabase(app);
-const storage = getStorage(app);
-
-// Enable offline persistence
-if (typeof window !== 'undefined') {
-  // Removed enableIndexedDbPersistence as it's not applicable for Realtime Database
-}
+const auth: Auth = getAuth(app);
+const db: Database = getDatabase(app);
+const storage: FirebaseStorage = getStorage(app);
 
 export { app, analytics, auth, db, storage };

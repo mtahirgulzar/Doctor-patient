@@ -73,13 +73,12 @@ export const getMessages = async (chatId: string): Promise<Message[]> => {
     const db = await initDB();
     const transaction = db.transaction([STORE_NAME], 'readonly');
     const store = transaction.objectStore(STORE_NAME);
-    const index = store.index('chatId');
-    const request = index.getAll(IDBKeyRange.only(chatId));
+    const request = store.index('chatId').getAll(IDBKeyRange.only(chatId));
 
     return new Promise((resolve, reject) => {
       request.onsuccess = () => {
         const messages = request.result
-          .map(({ chatId: _, ...message }) => message as Message) // Remove chatId from the result
+          .map(({ ...message }) => message as Message) // Remove chatId from the result
           .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
         resolve(messages);
       };

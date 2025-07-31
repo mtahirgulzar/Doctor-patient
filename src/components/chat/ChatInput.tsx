@@ -1,5 +1,5 @@
-// @ts-nocheck
-import { useState, KeyboardEvent, useCallback, useRef, useEffect } from 'react';
+import { useEffect } from 'react';
+import { useState, KeyboardEvent, useCallback, useRef, FormEvent } from 'react';
 
 interface ChatInputProps {
   onSendMessage: (text: string) => void;
@@ -9,37 +9,30 @@ interface ChatInputProps {
 
 export const ChatInput = ({ onSendMessage, onTyping, disabled }: ChatInputProps) => {
   const [message, setMessage] = useState('');
-  const typingTimeoutRef = useRef<NodeJS.Timeout>();
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastTypingTimeRef = useRef<number>(0);
 
-  // Debounced typing indicator
   const handleTypingDebounced = useCallback(() => {
     const now = Date.now();
-    const TYPING_INDICATOR_DELAY = 500; // ms
+    const TYPING_INDICATOR_DELAY = 500;
     
-    // Clear any existing timeout
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current);
     }
     
-    // Only send typing indicator if it's been more than TYPING_INDICATOR_DELAY since last one
     if (now - lastTypingTimeRef.current > TYPING_INDICATOR_DELAY) {
-      console.log('Sending typing indicator');
       onTyping();
       lastTypingTimeRef.current = now;
     }
     
-    // Set a timeout to send another typing indicator if user keeps typing
     typingTimeoutRef.current = setTimeout(() => {
       if (message.trim().length > 0) {
-        console.log('Sending follow-up typing indicator');
         onTyping();
         lastTypingTimeRef.current = Date.now();
       }
     }, TYPING_INDICATOR_DELAY * 2);
   }, [onTyping, message]);
 
-  // Clean up timeouts on unmount
   useEffect(() => {
     return () => {
       if (typingTimeoutRef.current) {
@@ -52,7 +45,6 @@ export const ChatInput = ({ onSendMessage, onTyping, disabled }: ChatInputProps)
     e.preventDefault();
     if (message.trim() === '') return;
     
-    // Clear any pending typing indicators when sending a message
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current);
     }
@@ -64,9 +56,8 @@ export const ChatInput = ({ onSendMessage, onTyping, disabled }: ChatInputProps)
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleSubmit(e as any);
+      handleSubmit(e as unknown as FormEvent);
     } else if (e.key !== 'Shift' && e.key !== 'Control' && e.key !== 'Alt' && e.key !== 'Meta') {
-      // Only trigger typing for character keys, not modifier keys
       handleTypingDebounced();
     }
   };

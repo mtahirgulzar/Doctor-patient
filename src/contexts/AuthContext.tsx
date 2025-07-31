@@ -87,12 +87,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       setIsLoading(false);
       return { success: true };
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Login error:', err);
       setIsLoading(false);
       let errorMessage = 'Login failed. Please check your credentials.';
       
-      if (err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found') {
+      const firebaseError = err as { code?: string; message?: string };
+      if (firebaseError.code === 'auth/wrong-password' || firebaseError.code === 'auth/user-not-found') {
         errorMessage = 'Invalid email or password';
       }
       

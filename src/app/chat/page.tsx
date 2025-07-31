@@ -8,7 +8,6 @@ import { ChatWindow } from '@/components/chat/ChatWindow';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
-// Define the two users in the system
 const USERS = {
   doctor: {
     email: 'doctoruser1@gmail.com',
@@ -27,20 +26,16 @@ export default function ChatPage() {
   const router = useRouter();
   const params = useParams();
   const otherUserEmail = params?.email ? decodeURIComponent(params.email as string) : undefined;
-  
-  // Determine the other user based on who's currently logged in
   const otherUser = user?.email === USERS.doctor.email ? USERS.patient : USERS.doctor;
   
   const { 
     messages, 
     loading: messagesLoading, 
-    error: messagesError,
     sendMessage, 
     otherUserTyping: isTyping, 
     handleTyping 
   } = useChat(otherUserEmail);
 
-  // If no chat is selected, redirect to the other user
   useEffect(() => {
     if (!otherUserEmail && user) {
       router.push(`/chat/${encodeURIComponent(otherUser.email)}`);
@@ -53,7 +48,6 @@ export default function ChatPage() {
         <Navbar />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 h-[calc(100vh-80px)]">
           <div className="bg-white rounded-xl shadow overflow-hidden h-full flex">
-            {/* Sidebar */}
             <div className="w-80 border-r border-gray-200 flex flex-col">
               <div className="p-4 border-b border-gray-200">
                 <h2 className="text-lg font-semibold text-gray-900">
@@ -86,7 +80,6 @@ export default function ChatPage() {
               </div>
             </div>
 
-            {/* Chat area */}
             <div className="flex-1 flex flex-col">
               {otherUserEmail ? (
                 <ChatWindow

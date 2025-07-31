@@ -1,6 +1,3 @@
-// In useChat.ts
-// @ts-nocheck
-
 import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   ref,
@@ -25,7 +22,7 @@ export const useChat = (otherUserEmail?: string) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [otherUserTyping, setOtherUserTyping] = useState(false);
-  const typingTimeoutRef = useRef<NodeJS.Timeout>();
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const CHAT_ID = 'doctor_patient'; // Fixed chat ID
 
   // Send a new message
@@ -87,7 +84,7 @@ export const useChat = (otherUserEmail?: string) => {
     if (!user?.email || !otherUserEmail || messageIds.length === 0) return;
 
     try {
-      const updates: { [key: string]: any } = {};
+      const updates: { [key: string]: unknown } = {};
       messageIds.forEach(id => {
         if (id) {
           updates[`chats/${CHAT_ID}/messages/${id}/read`] = true;
@@ -102,15 +99,10 @@ export const useChat = (otherUserEmail?: string) => {
     }
   }, [user?.email, otherUserEmail]);
 
-  // Encode email to be used in Firebase path
-  const encodeEmail = (email: string) => {
+  // Encode email for use in Firebase paths
+  const encodeEmail = useCallback((email: string): string => {
     return email.replace(/\./g, ',').replace(/@/g, '--at--');
-  };
-
-  // Decode email from Firebase path
-  const decodeEmail = (encoded: string) => {
-    return encoded.replace(/--at--/g, '@').replace(/,/g, '.');
-  };
+  }, []);
 
   // Handle typing indicator
   const handleTyping = useCallback(async () => {
@@ -147,12 +139,11 @@ export const useChat = (otherUserEmail?: string) => {
     } catch (error) {
       console.error('Error setting typing status to true:', error);
     }
-  }, [user?.email, otherUserEmail]);
+  }, [user?.email, otherUserEmail, encodeEmail]);
 
   // Load messages from local storage first, then sync with server
   const loadMessages = useCallback(async () => {
     if (!user?.email || !otherUserEmail) return;
-
     setLoading(true);
     
     try {
@@ -366,55 +357,55 @@ export const useChat = (otherUserEmail?: string) => {
   };
 };
 
-export const useChatList = () => {
-  const { user } = useAuth();
-  const [chats, setChats] = useState<Chat[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+// export const useChatList = () => {
+//   const { user } = useAuth();
+//   const [chats, setChats] = useState<Chat[]>([]);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!user?.email) return;
+//   useEffect(() => {
+//     if (!user?.email) return;
 
-    const chatsRef = collection(db, 'chats');
-    const q = query(
-      chatsRef,
-      where('participants', 'array-contains', user.email),
-      orderBy('lastMessage.timestamp', 'desc')
-    );
+//     const chatsRef = collection(db, 'chats');
+//     const q = query(
+//       chatsRef,
+//       where('participants', 'array-contains', user.email),
+//       orderBy('lastMessage.timestamp', 'desc')
+//     );
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const chatsData: Chat[] = [];
+//     const unsubscribe = onSnapshot(q, (snapshot) => {
+//       const chatsData: Chat[] = [];
 
-      snapshot.forEach((doc) => {
-        const data = doc.data();
-        chatsData.push({
-          id: doc.id,
-          participants: data.participants,
-          lastMessage: data.lastMessage ? {
-            text: data.lastMessage.text,
-            timestamp: data.lastMessage.timestamp?.toDate()
-          } : undefined,
-          unreadCount: data.unreadCount || 0
-        });
-      });
+//       snapshot.forEach((doc) => {
+//         const data = doc.data();
+//         chatsData.push({
+//           id: doc.id,
+//           participants: data.participants,
+//           lastMessage: data.lastMessage ? {
+//             text: data.lastMessage.text,
+//             timestamp: data.lastMessage.timestamp?.toDate()
+//           } : undefined,
+//           unreadCount: data.unreadCount || 0
+//         });
+//       });
 
-      setChats(chatsData);
-      setLoading(false);
-    }, (err) => {
-      console.error('Error getting chats:', err);
-      setError('Failed to load chats');
-      setLoading(false);
-    });
+//       setChats(chatsData);
+//       setLoading(false);
+//     }, (err) => {
+//       console.error('Error getting chats:', err);
+//       setError('Failed to load chats');
+//       setLoading(false);
+//     });
 
-    return () => unsubscribe();
-  }, [user?.email]);
+//     return () => unsubscribe();
+//   }, [user?.email]);
 
-  return {
-    chats: chats.map(chat => ({
-      ...chat,
-      otherParticipant: chat.participants.find(email => email !== user?.email) || ''
-    })),
-    loading,
-    error
-  };
-};
+//   return {
+//     chats: chats.map(chat => ({
+//       ...chat,
+//       otherParticipant: chat.participants.find(email => email !== user?.email) || ''
+//     })),
+//     loading,
+//     error
+//   };
+// };
