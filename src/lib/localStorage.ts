@@ -42,7 +42,6 @@ export const saveMessages = async (chatId: string, messages: Message[]): Promise
     const transaction = db.transaction([STORE_NAME], 'readwrite');
     const store = transaction.objectStore(STORE_NAME);
     
-    // First, clear existing messages for this chat
     const clearRequest = store.index('chatId').openCursor(IDBKeyRange.only(chatId));
     
     clearRequest.onsuccess = (event) => {
@@ -51,7 +50,6 @@ export const saveMessages = async (chatId: string, messages: Message[]): Promise
         store.delete(cursor.primaryKey);
         cursor.continue();
       } else {
-        // After clearing, add new messages
         messages.forEach(message => {
           store.put({ ...message, chatId });
         });
@@ -78,7 +76,7 @@ export const getMessages = async (chatId: string): Promise<Message[]> => {
     return new Promise((resolve, reject) => {
       request.onsuccess = () => {
         const messages = request.result
-          .map(({ ...message }) => message as Message) // Remove chatId from the result
+          .map(({ ...message }) => message as Message)
           .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
         resolve(messages);
       };

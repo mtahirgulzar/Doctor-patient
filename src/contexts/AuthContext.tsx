@@ -42,7 +42,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  // Firebase auth state persistence
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
@@ -68,7 +67,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     return () => unsubscribe();
   }, []);
 
-  //Firebase login function
   const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
     setIsLoading(true);
     try {
@@ -101,7 +99,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  //Logout
   const logout = async () => {
     await signOut(auth);
     setUser(null);

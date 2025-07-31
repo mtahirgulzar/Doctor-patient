@@ -17,7 +17,6 @@ export const ProtectedRoute = ({ children, requiredRole }: ProtectedRouteProps) 
     if (!isLoading && !user) {
       router.push('/');
     } else if (!isLoading && requiredRole && user?.role !== requiredRole) {
-      // If a specific role is required and user doesn't have it, redirect to home
       router.push('/');
     }
   }, [user, isLoading, router, requiredRole]);

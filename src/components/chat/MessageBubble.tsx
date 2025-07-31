@@ -1,4 +1,3 @@
-// In MessageBubble.tsx
 import { Message } from '@/types/chat';
 import { useAuth } from '@/contexts/AuthContext';
 import { format } from 'date-fns';

@@ -9,7 +9,7 @@ export interface Message {
 
 export interface Chat {
   id: string;
-  participants: string[]; // Array of user emails
+  participants: string[];
   lastMessage?: {
     text: string;
     timestamp: Date;
