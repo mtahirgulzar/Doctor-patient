@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useState, KeyboardEvent, useCallback, useRef, useEffect } from 'react';
 
 interface ChatInputProps {

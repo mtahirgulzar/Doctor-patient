@@ -34,8 +34,9 @@ export default function ChatPage() {
   const { 
     messages, 
     loading: messagesLoading, 
+    error: messagesError,
     sendMessage, 
-    isTyping, 
+    otherUserTyping: isTyping, 
     handleTyping 
   } = useChat(otherUserEmail);
 

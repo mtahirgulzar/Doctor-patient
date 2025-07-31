@@ -1,9 +1,9 @@
 'use client';
 
 import { useAuth } from '@/contexts/AuthContext';
-import { useRouter, usePathname } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { LogOut, MessageSquare, Calendar, User, Stethoscope, FileText, Menu, X } from 'lucide-react';
+import { LogOut, MessageSquare, Calendar, User, FileText, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 
 export const Navbar = () => {
